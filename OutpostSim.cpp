@@ -27,7 +27,7 @@ double normAngle(double angle) {
     return angle;
 }
 
-Eigen::Matrix<double, 3, 1> getNoise(int randSeed, double mean=0, double sigma=0.01) {
+Eigen::Matrix<double, 3, 1> getNoise(int randSeed, double mean=0, double sigma=0.1) {
     //srand((unsigned)randSeed);
     Eigen::Matrix<double, 3, 1> noise;
     noise << guassRand(mean, sigma), guassRand(mean, sigma), guassRand(mean, sigma);

@@ -20,22 +20,19 @@ namespace ly {
 
     class OutpostFilter {
     private:
-        ExtendedKalman<double, 5, 2> ekf; // est: x,y,theta,velocity,acceleration obs: x,y
+        ExtendedKalman<double, 4, 2> ekf; // est: x,x_v,y,y_v, measure: x,y
         double updatedTime;
         bool is_kalman_init;
         void setTransitionMatrix();
-
         void setMeasurementNoise();
-
         void setProcessNoise();
-
-        Eigen::Matrix<double, 2, 1> correct(Eigen::Matrix<double, 2, 1> measurement);
+        Eigen::Matrix<double, 2, 1> correct(const Eigen::Matrix<double, 2, 1>& measurement);
         MeasureToState measureToState;
     public:
+        double angleVelocity;
         void rebootEkf(Eigen::Matrix<double, 2, 1> measurement);
         Eigen::Matrix<double, 2, 1> runKalman(Eigen::Matrix<double, 2, 1> measurement, double delta_t);
         OutpostFilter();
-
         void setUpdatedTime(double delta_t);
     };
 }

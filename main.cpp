@@ -10,6 +10,7 @@ int main() {
     ly::OutpostSim outpostSim(Eigen::Matrix<double, 3, 1>(4, 0, 1.5), 0.3, 1);
     srand(123);
     ly::UDPSender sender("10.13.49.42", 1347);
+    ly::OutpostFilter filter;
     while(1) {
 
         vector<Eigen::Matrix<double, 3, 1> > points = outpostSim.update(0.01);
@@ -22,7 +23,7 @@ int main() {
         outpost.y = (float)armorPosition(1);
         outpost.z = (float)armorPosition(2);
 
-        ly::OutpostFilter filter;
+
         Eigen::Vector2d pos;
         pos<<outpost.x,outpost.y;
 
