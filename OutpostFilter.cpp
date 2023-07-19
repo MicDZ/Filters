@@ -4,8 +4,11 @@
 // Created by MicDZ on 2023/7/16.
 //
 
-ly::OutpostFilter::OutpostFilter() {
+ly::OutpostFilter::OutpostFilter(double measureNoise, double processNoise) {
     is_kalman_init = false;
+    ekf.measurement_noise_cov << measureNoise, 0,
+            0, measureNoise;
+	this->processNoise=processNoise;
     angleVelocity = 1;
 }
 
@@ -27,10 +30,10 @@ void ly::OutpostFilter::setUpdatedTime(double delta_t) {
 
 void ly::OutpostFilter::setMeasurementNoise() {
     // TODO: 根据装甲板的距离设置噪声
-
+    // TODO: 根据实际设置噪声
     double
-            measurementNoiseX = 0.1,
-            measurementNoiseY = 0.1;
+            measurementNoiseX = 0.01,
+            measurementNoiseY = 0.01;
 
     ekf.measurement_noise_cov << measurementNoiseX, 0,
             0, measurementNoiseY;
@@ -41,8 +44,8 @@ void ly::OutpostFilter::setProcessNoise() {
                             pow(updatedTime,3)/2,pow(updatedTime,2),0,0,
                             0,0,pow(updatedTime,4)/4,pow(updatedTime,3)/2,
                             0,0,pow(updatedTime,3)/2,pow(updatedTime,2);
-    double k=1e12;
-    ekf.process_noise_cov *= k;
+    //double k=5e13;
+    ekf.process_noise_cov *= processNoise;
     std::cout<<"process_noise_cov:"<<ekf.process_noise_cov<<std::endl;
 
     // TODO: 这里过程噪声的设置还有一个变换
@@ -71,10 +74,10 @@ Eigen::Matrix<double, 2, 1> ly::OutpostFilter::correct(const Eigen::Matrix<doubl
 
 Eigen::Matrix<double, 2, 1> ly::OutpostFilter::runKalman(Eigen::Matrix<double, 2, 1> measurement, double delta_t) {
     // 第一次初始化
+
     if (!is_kalman_init) {
         // set signal values
         is_kalman_init = true;
-
         // reset kalman
         rebootEkf(measurement);
         return measurement;

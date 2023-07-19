@@ -22,17 +22,18 @@ namespace ly {
     private:
         ExtendedKalman<double, 4, 2> ekf; // est: x,x_v,y,y_v, measure: x,y
         double updatedTime;
-        bool is_kalman_init;
+		double processNoise;
         void setTransitionMatrix();
         void setMeasurementNoise();
         void setProcessNoise();
         Eigen::Matrix<double, 2, 1> correct(const Eigen::Matrix<double, 2, 1>& measurement);
         MeasureToState measureToState;
     public:
+        bool is_kalman_init;
         double angleVelocity;
         void rebootEkf(Eigen::Matrix<double, 2, 1> measurement);
         Eigen::Matrix<double, 2, 1> runKalman(Eigen::Matrix<double, 2, 1> measurement, double delta_t);
-        OutpostFilter();
+        OutpostFilter(double measureNoise, double processNoise);
         void setUpdatedTime(double delta_t);
     };
 }

@@ -27,19 +27,20 @@ double normAngle(double angle) {
     return angle;
 }
 
-Eigen::Matrix<double, 3, 1> getNoise(int randSeed, double mean=0, double sigma=0.1) {
+Eigen::Matrix<double, 3, 1> getNoise(int randSeed, double mean=0, double sigma=0.01) {
     //srand((unsigned)randSeed);
     Eigen::Matrix<double, 3, 1> noise;
     noise << guassRand(mean, sigma), guassRand(mean, sigma), guassRand(mean, sigma);
     return noise;
 }
 
-OutpostSim::OutpostSim(Eigen::Matrix<double, 3, 1> centerPosition, double radius, double angularVelocity) {
+OutpostSim::OutpostSim(Eigen::Matrix<double, 3, 1> centerPosition, double radius, double angularVelocity, double sigma) {
     this->centerPosition = centerPosition;
     this->radius = radius;
     this->height = centerPosition(2);
     this->angularVelocity = angularVelocity;
     this->armorPosition = armorPosition;
+    this->sigma = sigma;
 }
 
 Eigen::Matrix<double, 3, 1> OutpostSim::getCenterPosition() {
@@ -76,12 +77,12 @@ std::vector<Eigen::Matrix<double, 3, 1> >OutpostSim::update(double time) {
     double angle_ = normAngle(this->angle);
     this->angle = angle_;
 
-    std::vector<double> armorsAngle;
-
-    armorsAngle.push_back(angle_);
-    armorsAngle.push_back(normAngle(angle_ + M_PI * 2 / 3));
-    armorsAngle.push_back(normAngle(angle_ + M_PI * 4 / 3));
-
+//    std::vector<double> armorsAngle;
+//
+//    armorsAngle.push_back(angle_);
+//    armorsAngle.push_back(normAngle(angle_ + M_PI * 2 / 3));
+//    armorsAngle.push_back(normAngle(angle_ + M_PI * 4 / 3));
+//
 //    bool gotArmorInSight = false;
 //    for(double armor : armorsAngle) {
 //        if(armor>0 && armor<60.0/360*2*M_PI) { // 60 degree
@@ -98,8 +99,8 @@ std::vector<Eigen::Matrix<double, 3, 1> >OutpostSim::update(double time) {
 //    }
     // add gaussian noise to armorPosition
 
-    Eigen::Matrix<double, 3, 1> posNoise = getNoise(rand());
-    Eigen::Matrix<double, 3, 1> centerNoise = getNoise(rand());
+    Eigen::Matrix<double, 3, 1> posNoise = getNoise(rand(), 0,this->sigma);
+    Eigen::Matrix<double, 3, 1> centerNoise = getNoise(rand(),0, this->sigma);
 
     measureArmorPosition(0) = this->radius * cos(angle_) + this->centerPosition(0);
     measureArmorPosition(1) = this->radius * sin(angle_) + this->centerPosition(1);

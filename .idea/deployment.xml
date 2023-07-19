@@ -5,7 +5,7 @@
       <paths name="docker (b7bc7c9b-4d9d-406f-829e-3c9ebe8cb56b)">
         <serverdata>
           <mappings>
-            <mapping deploy="/home/nvidia/" local="$PROJECT_DIR$" />
+            <mapping deploy="/tmp" local="$PROJECT_DIR$" />
           </mappings>
           <excludedPaths>
             <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />

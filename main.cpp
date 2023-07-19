@@ -7,10 +7,11 @@
 using namespace std;
 
 int main() {
-    ly::OutpostSim outpostSim(Eigen::Matrix<double, 3, 1>(4, 0, 1.5), 0.3, 1);
+    ly::OutpostSim outpostSim(Eigen::Matrix<double, 3, 1>(4, 0, 1.5), 0.3, 2., 0.01);
     srand(123);
     ly::UDPSender sender("10.13.49.42", 1347);
-    ly::OutpostFilter filter;
+    ly::OutpostFilter filter(0.01, 1e15);
+    double stalledTime = 0;
     while(1) {
 
         vector<Eigen::Matrix<double, 3, 1> > points = outpostSim.update(0.01);

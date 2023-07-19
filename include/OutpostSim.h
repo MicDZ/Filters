@@ -15,11 +15,12 @@ namespace ly {
         Eigen::Matrix<double, 3, 1> centerPosition;
         double radius, height, angle{};
         double angularVelocity;
+        double sigma;
         //double angularAcceleration;
         Eigen::Matrix<double, 3, 1> armorPosition;
 
     public:
-        OutpostSim(Eigen::Matrix<double, 3, 1>, double radius, double angularVelocity);
+        OutpostSim(Eigen::Matrix<double, 3, 1>, double radius, double angularVelocity, double sigma);
 
         Eigen::Matrix<double, 3, 1> getCenterPosition();
 
