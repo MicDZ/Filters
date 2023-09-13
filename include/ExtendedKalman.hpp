@@ -1,11 +1,11 @@
 #ifndef _EXTENDED_KALMAN_OLD_HPP
 #define _EXTENDED_KALMAN_OLD_HPP
 
-#include "ceres/jet.h"
+//#include "ceres/jet.h"
 #include "eigen3/Eigen/Dense"
 #include <eigen3/Eigen/Core>
 #include <vector>
-
+#include <iostream>
 
 // EKF模板
 template<typename T, int x, int y>
@@ -46,49 +46,49 @@ public:
         measurement_cov_maxtrix = Eigen::Matrix<T, y, y>::Zero();
     }
 
-    template<class Func>
-    [[maybe_unused]] Eigen::Matrix<T, x, 1>
-    predict_pyd(Func &&func, const Eigen::Matrix<T, y, 1> &measure_vec) //根据上一帧的估计值直接利用函数进行计算
-    {
-        prior_state_estimate = transition_matrix * posteriori_state_estimate + control_matrix * control_vector;
-
-        error_cov_post = transition_matrix * error_cov_post * transition_matrix.transpose() + process_noise_cov;
-
-        ceres::Jet<double, x> Xp_auto_jet[x];
-        for (int i = 0; i < x; i++) {
-            Xp_auto_jet[i].a = prior_state_estimate[i];
-            Xp_auto_jet[i].v[i] = 1;
-        }
-        ceres::Jet<double, x> Yp_auto_jet[y];
-        func(Xp_auto_jet, Yp_auto_jet);
-        for (int i = 0; i < y; i++) {
-            prior_state_estimate_measure[i] = Yp_auto_jet[i].a;
-            measurement_matrix.block(i, 0, 1, x) = Yp_auto_jet[i].v.transpose();
-        }
-        measurement_cov_maxtrix = (measurement_matrix * error_cov_post * measurement_matrix.transpose() +
-                                   measurement_noise_cov).inverse();
-        residual = measure_vec - prior_state_estimate_measure;
-        if (fabs(residual[1]) > 1.5 * M_PI) // yaw轴残差矫正
-        {
-            if (residual[1] > 0) {
-                residual[1] -= 2 * M_PI;
-            } else {
-                residual[1] += 2 * M_PI;
-            }
-        }
-
-        return prior_state_estimate;
-    }
+//    template<class Func>
+//    [[maybe_unused]] Eigen::Matrix<T, x, 1>
+//    predict_pyd(Func &&func, const Eigen::Matrix<T, y, 1> &measure_vec) //根据上一帧的估计值直接利用函数进行计算
+//    {
+//        prior_state_estimate = transition_matrix * posteriori_state_estimate + control_matrix * control_vector;
+//
+//        error_cov_post = transition_matrix * error_cov_post * transition_matrix.transpose() + process_noise_cov;
+//
+//        ceres::Jet<double, x> Xp_auto_jet[x];
+//        for (int i = 0; i < x; i++) {
+//            Xp_auto_jet[i].a = prior_state_estimate[i];
+//            Xp_auto_jet[i].v[i] = 1;
+//        }
+//        ceres::Jet<double, x> Yp_auto_jet[y];
+//        func(Xp_auto_jet, Yp_auto_jet);
+//        for (int i = 0; i < y; i++) {
+//            prior_state_estimate_measure[i] = Yp_auto_jet[i].a;
+//            measurement_matrix.block(i, 0, 1, x) = Yp_auto_jet[i].v.transpose();
+//        }
+//        measurement_cov_maxtrix = (measurement_matrix * error_cov_post * measurement_matrix.transpose() +
+//                                   measurement_noise_cov).inverse();
+//        residual = measure_vec - prior_state_estimate_measure;
+//        if (fabs(residual[1]) > 1.5 * M_PI) // yaw轴残差矫正
+//        {
+//            if (residual[1] > 0) {
+//                residual[1] -= 2 * M_PI;
+//            } else {
+//                residual[1] += 2 * M_PI;
+//            }
+//        }
+//
+//        return prior_state_estimate;
+//    }
 
     Eigen::Matrix<T, x, 1> predict(Eigen::Vector2d measure) {
         prior_state_estimate = transition_matrix * posteriori_state_estimate + control_matrix * control_vector;
         prior_state_estimate_measure = measurement_matrix * prior_state_estimate;
-        std::cout<<"prior_state_estimate: "<<prior_state_estimate<<std::endl;
+//        std::cout<<"prior_state_estimate: "<<prior_state_estimate<<std::endl;
         error_cov_post = transition_matrix * error_cov_post * transition_matrix.transpose() + process_noise_cov;
         measurement_cov_maxtrix = (measurement_matrix * error_cov_post * measurement_matrix.transpose() +
                                    measurement_noise_cov).inverse();
-        std::cout<<"measure: "<<measure<<std::endl;
-        std::cout<<"prior_state_estimate_measure: "<<prior_state_estimate_measure<<std::endl;
+//        std::cout<<"measure: "<<measure<<std::endl;
+//        std::cout<<"prior_state_estimate_measure: "<<prior_state_estimate_measure<<std::endl;
         residual = measure - prior_state_estimate_measure;
         return prior_state_estimate;
     }
@@ -96,9 +96,9 @@ public:
     Eigen::Matrix<T, x, 1> update() //根据实际值计算,并更新
     {
         kalman_gain = error_cov_post * measurement_matrix.transpose() * measurement_cov_maxtrix;
-        std::cout<<"kalman_gain: "<<kalman_gain<<std::endl;
-        std::cout<<"error_cov_post: "<<error_cov_post<<std::endl;
-        std::cout<<"residual: "<<residual<<std::endl;
+//        std::cout<<"kalman_gain: "<<kalman_gain<<std::endl;
+//        std::cout<<"error_cov_post: "<<error_cov_post<<std::endl;
+//        std::cout<<"residual: "<<residual<<std::endl;
         posteriori_state_estimate = prior_state_estimate + kalman_gain * residual;
         error_cov_post = (Eigen::Matrix<T, x, x>::Identity() - kalman_gain * measurement_matrix) * error_cov_post;
         return posteriori_state_estimate;

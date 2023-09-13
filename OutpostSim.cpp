@@ -39,7 +39,7 @@ OutpostSim::OutpostSim(Eigen::Matrix<double, 3, 1> centerPosition, double radius
     this->radius = radius;
     this->height = centerPosition(2);
     this->angularVelocity = angularVelocity;
-    this->armorPosition = armorPosition;
+    // this->armorPosition = armorPosition;
     this->sigma = sigma;
 }
 
@@ -77,26 +77,28 @@ std::vector<Eigen::Matrix<double, 3, 1> >OutpostSim::update(double time) {
     double angle_ = normAngle(this->angle);
     this->angle = angle_;
 
-//    std::vector<double> armorsAngle;
-//
-//    armorsAngle.push_back(angle_);
-//    armorsAngle.push_back(normAngle(angle_ + M_PI * 2 / 3));
-//    armorsAngle.push_back(normAngle(angle_ + M_PI * 4 / 3));
-//
-//    bool gotArmorInSight = false;
-//    for(double armor : armorsAngle) {
-//        if(armor>0 && armor<60.0/360*2*M_PI) { // 60 degree
-//            angle_ = armor;
-//            gotArmorInSight=true;
-//            std::cout<<"angle_: "<<angle_<<std::endl;
-//            break;
-//        }
-//    }
-//    if(!gotArmorInSight) {
-//        Eigen::Matrix<double, 3, 1> zeros = Eigen::Matrix<double, 3, 1>::Zero();;
-//        return std::vector<Eigen::Matrix<double, 3, 1> >{zeros, zeros};
-//
-//    }
+    std::vector<double> armorsAngle;
+
+    armorsAngle.push_back(angle_);
+   // armorsAngle.push_back(normAngle(angle_ + M_PI * 2 / 3));
+   // armorsAngle.push_back(normAngle(angle_ + M_PI * 4 / 3));
+
+    bool gotArmorInSight = false;
+    for(double armor : armorsAngle) {
+        if(armor>0 && armor<60.0/360*2*M_PI) { // 60 degree
+            angle_ = armor;
+            gotArmorInSight=true;
+            std::cout<<"angle_: "<<angle_<<std::endl;
+            break;
+        }
+    }
+
+    // 视线中无装甲板
+    if(!gotArmorInSight) {
+        Eigen::Matrix<double, 3, 1> noTarget = Eigen::Matrix<double, 3, 1>::Zero();
+        return std::vector<Eigen::Matrix<double, 3, 1> >{noTarget, noTarget};
+
+    }
     // add gaussian noise to armorPosition
 
     Eigen::Matrix<double, 3, 1> posNoise = getNoise(rand(), 0,this->sigma);
